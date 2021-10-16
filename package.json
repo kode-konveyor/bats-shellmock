@@ -1,0 +1,34 @@
+{
+  "name": "bats-shellmock",
+  "version": "1.0.0",
+  "description": "shellmock for Bats",
+  "directories": {
+    "lib": "src",
+    "test": "test"
+  },
+  "files": [
+    "load.bash",
+    "src"
+  ],
+  "scripts": {
+    "test": "bats ${CI+-t} test"
+  },
+  "devDependencies": {
+    "bats": "^1.4.1",
+    "bats-support": "bats-core/bats-support#v0.3.0",
+    "bats-assert": "bats-core/bats-assert#v2.0.0",
+    "bats-file": "bats-core/bats-file#v0.3.0"
+  },
+  "keywords": [
+    "bats",
+    "bash",
+    "shell",
+    "mock",
+    "shellmock",
+    "test",
+    "unit",
+    "assert",
+    "assertion",
+    "helper"
+  ]
+}

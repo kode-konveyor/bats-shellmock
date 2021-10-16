@@ -1,4 +1,5 @@
-/sample-bats/tmpstubs/
 .idea
 *.out
 *.err
+
+/test/tmpstubs
