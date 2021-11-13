@@ -16,5 +16,8 @@
 # All output is formatted for readability using the functions of
 # `output.bash' and sent to the standard error.
 
+SHELLMOCK_LOAD_SCRIPT=${BASH_SOURCE[0]}
+export SHELLMOCK_LOAD_SCRIPT
+
 # shellcheck disable=1090
 source "$(dirname "${BASH_SOURCE[0]}")/src/shellmock.bash"
