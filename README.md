@@ -134,7 +134,7 @@ The original version 1 did not make any distinction and this new feature was add
 In this test scenario we are only matching one of the arguments: "sample line". Any filename could be passed and still match the mock.
 
 ```bash
- @test "sample.sh-success-partial-mock" {
+@test "sample.sh-success-partial-mock" {
 
     shellmock_expect grep --status 0 --type partial --match '"sample line"'
 
@@ -153,7 +153,6 @@ In this test scenario we are only matching one of the arguments: "sample line". 
     shellmock_verify
     shellmock_verify_times 1
     shellmock_verify_command 0 'grep-stub "sample line" sample.out'
-
 }
 ```
 
