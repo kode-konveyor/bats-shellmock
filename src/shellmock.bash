@@ -513,14 +513,14 @@ shellmock_verify() {
 # Verify number of times called
 #---------------------------------------------------
 function shellmock_verify_times() {
-  assert_equal "${#capture[*]}" "$1"
+  [[ "${#capture[*]}" == $1 ]]
 }
 
 #---------------------------------------------------
 # Verify command of nth time stubs called
 #---------------------------------------------------
 function shellmock_verify_command() {
-  assert_equal "${capture[$1]}" "$2"
+  [[ "${capture[$1]}" == "$2" ]]
 }
 
 #-------------------------------------------------------------------------------------------------------
