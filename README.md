@@ -50,18 +50,18 @@ teardown() {
 
 In the `sample.sh` script below, the status code from **grep** is used to control the logic flow of the script. We can use Shellmock’s **shellmock\_expect** command to simulate various success and failures scenarios depending on the arguments passed into the **grep** command.
 
-**sample.sh** 
+**sample.sh**
 
-```bash 
+```bash
 echo "sample line" > sample.out
 
-grep "sample line" sample.out > /dev/null 
-if [ $? -ne 0 ]; then 
-    echo "sample not found" 
-    exit 1 
+grep "sample line" sample.out > /dev/null
+if [ $? -ne 0 ]; then
+    echo "sample not found"
+    exit 1
 fi
 
-echo "sample found" 
+echo "sample found"
 ```
 
 In the sections that follow we will create some test cases against **sample.sh**.
@@ -70,7 +70,7 @@ In the sections that follow we will create some test cases against **sample.sh**
 
 This testcase is simply using bats and calling the real **grep** command. No mocking was involved. This was included to show that testcases can be a mixture of mocks and real commands.
 
-```bash 
+```bash
 @test "sample.sh-success" {
 
     run ./sample.sh
@@ -82,26 +82,26 @@ This testcase is simply using bats and calling the real **grep** command. No moc
 
     # Optionally since this is a single line you can use $output
     [ "$output" = "sample found" ]
-} 
+}
 ```
 
 ### Failure Scenario using exact matching
 
 In this failure scenario we are creating a stub that will return a status of 1 if the **grep** is called in one of the two ways below:
 
-``` 
+```
 grep "sample line" sample.out.
 
 or
 
 grep *sample line* sample.out
 
-These will look the same in the stub’s input args. 
+These will look the same in the stub’s input args.
 ```
 
 The testcase is using the default match type which is an exact match.
 
-```bash 
+```bash
 @test "sample.sh-failure" {
 
     shellmock_expect grep --status 1 --match '"sample line" sample.out'
@@ -120,7 +120,7 @@ The testcase is using the default match type which is an exact match.
     # called to create the capture array to allow expect verifications.
     shellmock_verify
     shellmock_verify_command 0 'grep-stub "sample line" sample.out'
-} 
+}
 ```
 
 After the status and output of the script has been validated as needed, then the final piece is to verify that all of the expected mocks were called. The function **shellmock\_verify** reads the **shellmock.out** file which contains a record of all mock invocations. The lines of the file are written to an array variable called **capture**.
@@ -154,14 +154,14 @@ In this test scenario we are only matching one of the arguments: "sample line". 
     shellmock_verify_times 1
     shellmock_verify_command 0 'grep-stub "sample line" sample.out'
 
-} 
+}
 ```
 
 ### Success Scenario demonstrating single vs double quotes
 
 This testcase is the same as the one above except that single quotes where used around the argument.
 
-```bash 
+```bash
 @test "sample.sh-success-partial-mock-with-single-quotes" {
 
     shellmock_expect grep --status 0 --type partial --match "'sample line'"
@@ -183,14 +183,14 @@ This testcase is the same as the one above except that single quotes where used 
 
     # Note that it is "sample line" in the capture output.
     shellmock_verify_command 0 'grep-stub "sample line" sample.out'
-} 
+}
 ```
 
 ### Scenario with RegEx matching
 
 This scenario was easier to show just using grep directly from the bats file. I created two mocks for grep, one with file names that start with *s* and one with file names starting with *b*. The two mocks return 0 and 1 respectively.
 
-```bash 
+```bash
 @test "sample.sh-mock-with-regex" {
 
     shellmock_expect grep --status 0 --type regex --match '"sample line" s.*'
@@ -218,7 +218,7 @@ This scenario was easier to show just using grep directly from the bats file. I 
     shellmock_verify_command 1 'grep-stub "sample line" sample1.out'
     shellmock_verify_command 2 'grep-stub "sample line" bfile.out'
     shellmock_verify_command 3 'grep-stub "sample line" bats.out'
-} 
+}
 ```
 
 The test bats files are another good source for examples as it contains examples of all of the **shellmock** features.
@@ -233,20 +233,20 @@ This section contains a list of the function provided by **shellmock** also with
 
 **TEST\_FUNCTION** may contain one or more test names delimited by a pipe. In the example below only tests "sample.sh failure" and "sample.sh success" would be executed. All others would be skipped.
 
-```bash 
-$export TEST_FUNCTION="sample-failure|sample.sh-success" 
+```bash
+$export TEST_FUNCTION="sample-failure|sample.sh-success"
 ```
 
 or
 
-```bash 
-TEST_FUNCTION="sample-failure" bats test  
+```bash
+TEST_FUNCTION="sample-failure" bats test
 ```
 
 The next step is to instrument the **setup** function and leverage the **BATS\_TEST\_DESCRIPTION** variable. Alternatively, you can instrument each function with **skipIfNot** and pass in any alias for the test name you like.
 
-```bash 
-setup() { # Source the shellmock functions into the shell. 
+```bash
+setup() { # Source the shellmock functions into the shell.
     . ../bin/shellmock
 
     skipIfNot "$BATS_TEST_DESCRIPTION"
@@ -258,7 +258,7 @@ setup() { # Source the shellmock functions into the shell.
 
 . . .
 
-} 
+}
 ```
 
 ### shellmock\_clean
@@ -293,63 +293,63 @@ The output is captured in shellmock-debug.out and will only be available if **TE
 
 **shellmock\_verify** converts all **shellmock.out** lines into a variable array called **capture**. This allows testers to verify which stubs were called and in what order.
 
-```bash 
-@test "sample.sh-failure" { 
-. 
-. 
-. 
-shellmock_verify 
-[ "${capture[0]}" = "some-stub arg1 arg2" ] 
-[ "${capture[1]}" = "some-stub2 arg1 arg2" ] 
-# or 
+```bash
+@test "sample.sh-failure" {
+.
+.
+.
+shellmock_verify
+[ "${capture[0]}" = "some-stub arg1 arg2" ]
+[ "${capture[1]}" = "some-stub2 arg1 arg2" ]
+# or
 shellmock_verify_command 0 "some-stub arg1 arg2"
 shellmock_verify_command 1 "some-stub2 arg1 arg2"
 
-} 
+}
 ```
 
 ### shellmock\_verify\_times
 
-**shellmock\_verify\_times** used after **shellmock\_verify** this checks the number of calls to the mock. It allows testers to verify how many times stubs were called. It is a more descriptive way to write `[ "${#capture[@]}" = "10" ]`.  
+**shellmock\_verify\_times** used after **shellmock\_verify** this checks the number of calls to the mock. It allows testers to verify how many times stubs were called. It is a more descriptive way to write `[ "${#capture[@]}" = "10" ]`.
 
-```bash 
-@test "sample.sh-failure" { 
-. 
-. 
-. 
-shellmock_verify 
+```bash
+@test "sample.sh-failure" {
+.
+.
+.
+shellmock_verify
 shellmock_verify_times 10
 shellmock_verify_command 0 "some-stub arg1 arg2"
-} 
+}
 ```
 
 ### shellmock\_verify\_command
 
 **shellmock\_verify\_command** used after **shellmock\_verify** this checks the command of the nth calls to the mock. It allows testers to verify the command in the call. It is a more descriptive way to write `[ "${capture[0]}" = 'cp-stub a b' ]`.
 
-```bash 
-@test "sample.sh-failure" { 
-. 
-. 
-. 
-shellmock_verify 
+```bash
+@test "sample.sh-failure" {
+.
+.
+.
+shellmock_verify
 shellmock_verify_command 0 "some-stub arg1 arg2"
 shellmock_verify_command 1 "some-stub2 arg1 arg2"
-} 
+}
 ```
 
 ### shellmock\_expect
 
 **shellmock\_expect** allows you specify the command to be mocked and how the function should be mocked. The behavior can be in terms of status code, output to echo or a custom behavior that you provide.
 
-```bash 
-usage: shellmock_expect [cmd] 
-    [--type partial | exact | regex ] 
-    [--status #] 
-    --match [arg1 arg2 arg3…] 
-    [--exec cmdstring ] 
-    [--source cmdstring] 
-    [--output texttoecho] 
+```bash
+usage: shellmock_expect [cmd]
+    [--type partial | exact | regex ]
+    [--status #]
+    --match [arg1 arg2 arg3…]
+    [--exec cmdstring ]
+    [--source cmdstring]
+    [--output texttoecho]
 ```
 
 <table style="width:100%;"><colgroup><col style="width: 36%" /><col style="width: 52%" /><col style="width: 10%" /></colgroup><tbody><tr class="odd"><td style="text-align: left;"><p><strong>Item</strong></p></td><td style="text-align: left;"><p><strong>Description</strong></p></td><td style="text-align: left;"><p><strong>Required?</strong></p></td></tr><tr class="even"><td style="text-align: left;"><p>cmd</p></td><td style="text-align: left;"><p>unix command to mock</p></td><td style="text-align: left;"><p>Yes.</p></td></tr><tr class="odd"><td style="text-align: left;"><p>-t,--type</p></td><td style="text-align: left;"><p>Type of argument list matching: <strong>partial</strong>, <strong>exact</strong> <strong>regex</strong></p></td><td style="text-align: left;"><p>No. Defaults to <strong>exact</strong></p></td></tr><tr class="even"><td style="text-align: left;"><p>-T,--stdin-match-type</p></td><td style="text-align: left;"><p>Type of stdin matching: <strong>partial</strong>, <strong>exact</strong>, or <strong>regex</strong></p></td><td style="text-align: left;"><p><strong>exact</strong></p></td></tr><tr class="odd"><td style="text-align: left;"><p>-m,--match,--match-args</p></td><td style="text-align: left;"><p>Arguments passed to cmd that indicate a match to mock.</p></td><td style="text-align: left;"><p>No.</p></td></tr><tr class="even"><td style="text-align: left;"><p>-M,--match-stdin</p></td><td style="text-align: left;"><p>stdin data that is expected to be considered a match.</p></td><td style="text-align: left;"><p>No.</p></td></tr><tr class="odd"><td style="text-align: left;"><p>-e,--exec</p></td><td style="text-align: left;"><p>Command string to execute for custom behavior.</p></td><td style="text-align: left;"><p>No.</p></td></tr><tr class="even"><td style="text-align: left;"><p>-S,--source</p></td><td style="text-align: left;"><p>Command string to source.</p></td><td style="text-align: left;"><p>No.</p></td></tr><tr class="odd"><td style="text-align: left;"><p>-o,--output</p></td><td style="text-align: left;"><p>Text string to echo if there is a match.</p></td><td style="text-align: left;"><p>No.</p></td></tr><tr class="even"><td style="text-align: left;"><p>-s,--status</p></td><td style="text-align: left;"><p>status code to return</p></td><td style="text-align: left;"><p>No. Defaults to 0</p></td></tr></tbody></table>
@@ -366,7 +366,7 @@ These examples assume that the "grep string1 file1" is the unix command being mo
 
 This example mocks **grep** to return a 0 status when the input is "string1 file1". In order to verify that the function was called you would need to use **shellmock\_verify** and do a comparison.
 
-```bash 
+```bash
 shellmock_expect grep --match "string1 file2"
 
 run grep string1 file2
@@ -378,7 +378,7 @@ shellmock_verify
 
 This scenario show a status of 1 being returned for the same inputs.
 
-```bash 
+```bash
 shellmock_expect grep --status 1 --match "string1 file2"
 
 run grep string1 file2
@@ -390,7 +390,7 @@ shellmock_verify
 
 If the **grep** command is run it will return a status 0 if arg1 is "string1" regardless of the rest of the args. Use **shellmock\_verify** verify each invocation if desired.
 
-```bash 
+```bash
 shellmock_expect grep --status 0 --type partial --match string1
 
 run grep string1 file2
@@ -406,7 +406,7 @@ If the **grep** command is run by the script under test it will return a status 
 
 If the --match argument were "*string1 string2* file", where the double quotes and single quotes are swapped, then shellmock treats the string as if it were *"string1 string2" file*.
 
-```bash 
+```bash
 shellmock_expect grep --status 0 --type partial --match *"string1 string2"*
 
 run grep "string1 string2" file2
@@ -422,7 +422,7 @@ This example shows the use of regex match type.
 
 The regular expression is evaluated by the **AWK** command. Refer to **AWK** documentation for details. Any **AWK** special characters will need to be escaped in the match criteria.
 
-```bash 
+```bash
 shellmock_expect grep --status 0 --type regex --match "s.\* f.\*"
 
 run grep string1 file2
@@ -438,7 +438,7 @@ If the **grep** command is run by a script under test it will return a status 0 
 
 For this example you can verify the **status**, the **output**/**line**, and the **capture** variables.
 
-```bash 
+```bash
 shellmock_expect grep --status 0 --type partial --match "string1" --exec "echo mycustom {}"
 
     run grep string1 file1
@@ -497,41 +497,41 @@ This project requires some additional dependencies:
 
 Shellcheck has been integrated into the build process to provide the posix shell linting capabilities.
 
-There is one globally disabled shellcheck rule related to the use of $?. It was quite rampant and it seemed good enough for now to ignore this one. 
+There is one globally disabled shellcheck rule related to the use of $?. It was quite rampant and it seemed good enough for now to ignore this one.
 
-``` 
-#!/usr/bin/env bash 
-#shellcheck disable=SC2181 
+```
+#!/usr/bin/env bash
+#shellcheck disable=SC2181
 ```
 
 Others are disabled as required such as the use of single quotes in awk commands that wrap the awk scripts. In those cases it was necessary to ignore SC2016 since we expect awk $ variables NOT to be expanded by the shell.
 
 Shellcheck allows file, function and line item exclusions. In this project we favor line item exclusions. To add a line item exception place the exclusion directly about the line of code.
 
-``` 
-#shellcheck disable=SC2016 
-    AWK_STDIN_SCRIPT='BEGIN"@@"{if ($4=="E" && ($5… 
+```
+#shellcheck disable=SC2016
+    AWK_STDIN_SCRIPT='BEGIN"@@"{if ($4=="E" && ($5…
 ```
 
 It may make sense, however, to exclude at a higher level if for some reason there is a high number of expected failures as is the case in the **shellmock\_expect()** function. That function generates a shell script itself so shellcheck has a field day in that one. As a result we excluded two items within the function.
 
-``` 
-#shellcheck disable=SC2016,SC2129 
-shellmock_expect() 
+```
+#shellcheck disable=SC2016,SC2129
+shellmock_expect()
 ```
 
 ## Looking up Error Details
 
-[Shellcheck Errors](https://github.com/koalaman/shellcheck/wiki/Checks) describes how to lookup a particular error. There is a page created for each one. You access the page by appending the error code that was reported by shellcheck. 
-``` 
-https://github.com/koalaman/shellcheck/wiki/Checks/[error] 
+[Shellcheck Errors](https://github.com/koalaman/shellcheck/wiki/Checks) describes how to lookup a particular error. There is a page created for each one. You access the page by appending the error code that was reported by shellcheck.
+```
+https://github.com/koalaman/shellcheck/wiki/Checks/[error]
 ```
 
 At the time of this writing they also provided a link in the page to take you to an enumerated list of all errors.
 
 ## Contributors
 
-This project was originally developed by Capital One’s Open Source Projects group. 
+This project was originally developed by Capital One’s Open Source Projects group.
 
 * [ckstettler](https://github.com/ckstettler)
 * @CaptianQuirk
@@ -542,7 +542,7 @@ After the group abandoned the code, in 2021, it has forked and updated by [Duane
 
 ## License
 
-Unless indicated otherwise, this project continues to be licensed 
-under the Apache License, Version 2.0. 
+Unless indicated otherwise, this project continues to be licensed
+under the Apache License, Version 2.0.
 You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 .
