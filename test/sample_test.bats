@@ -18,7 +18,7 @@ teardown() {
 
 @test "sample.sh-success" {
 
-    run ./sample.sh
+    run "${BATS_TEST_DIRNAME}/sample.sh"
 
     [ "$status" = "0" ]
 
@@ -33,7 +33,7 @@ teardown() {
 
     shellmock_expect grep --status 0 --type partial --match '"sample line"'
 
-    run ./sample.sh
+    run "${BATS_TEST_DIRNAME}/sample.sh"
 
     shellmock_dump
 
