@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #shellcheck disable=SC2181
 #---------------------------------------------------------------------------------
-# File: shellmock.bash.bash
+# File: shellmock.bash
 # Purpose:
 #    This script provides mocking features to test the various bash scripts.
 #    They are made available in your current shell by sourcing this script.
-#    i.e.  source shellmock.bash.bash
+#    i.e.  source shellmock.bash
 #---------------------------------------------------------------------------------
 
 #---------------------------------------
@@ -27,7 +27,7 @@ skipIfNot() {
 # double quotes around the argument.
 #
 # Note: Even if single quotes were originally used the string and
-# any matching in the ${capture{@]} arrary will have double quotes around
+# any matching in the ${capture{@]} array will have double quotes around
 # the arguments.
 #----------------------------------------------------------------------------
 shellmock_normalize_args() {
@@ -37,8 +37,8 @@ shellmock_normalize_args() {
   # Shellcheck warnings have been disable below. I think for good reason.
   # The function is all about not losing knowledge about which strings
   # are quoted in the argument list.  In the future I may revisit this.
-  # For now I just know I spent alot of time getting it to work and
-  # dont want to break it now.
+  # For now I just know I spent a lot of time getting it to work and
+  # don't want to break it now.
   #-----------------------------------------------------------------------
   local re="[[:space:]]+"
   local args=""
@@ -60,38 +60,38 @@ shellmock_normalize_args() {
 
 }
 #---------------------------------------------------------------------
-# The variables are being pas$SED to sed and / are important to sed
+# The variables are being passed to sed and / are important to sed
 # so before we send to sed and write to the detour.properties we will
-# use sed to replace any / with \/ then the later sed will succede.
+# use sed to replace any / with \/ then the later sed will succeed.
 #---------------------------------------------------------------------
 shellmock_escape_special_chars() {
   shellmock_debug "shellmock_escape_special_chars: args: $*"
   $ECHO "$*" | $SED -e 's/\//\\\//g' -e 's/\[/\\\[/g' -e 's/\]/\\\]/g'
 }
 #---------------------------------------------------------------------
-# The variables are being pas$SED to sed and / are important to sed
+# The variables are being passed to sed and / are important to sed
 # so before we send to sed and write to the detour.properties we will
-# use sed to replace any / with \/ then the later sed will succede.
+# use sed to replace any / with \/ then the later sed will succeed.
 #---------------------------------------------------------------------
 shellmock_escape_escapes() {
   shellmock_debug "shellmock_escape_escapes: args: $*"
   $ECHO "$*" | $SED -e 's/\\/\\\\/g'
 }
 #--------------------------------------------------------------------------------------------------------------------------------------
-# This funciton is used to mock bash scripts.  It maps inputs to outputs and if a given script is
+# This function is used to mock bash scripts.  It maps inputs to outputs and if a given script is
 # expecting varying results then they are played back in the order the expects were given.
 #
 # inputs are assumed to be the function name plus command line arguments.
 # outputs are the given string provided.
 #
-# usage: shellmock.bash.bash  [command] --source [command to source] --exec [command to exec] --match [args to match] --output [output to write]
-# --source -- specifies the script to soure if the args match
+# usage: shellmock.bash  [command] --source [command to source] --exec [command to exec] --match [args to match] --output [output to write]
+# --source -- specifies the script to source if the args match
 # --exec -- specifies the script to execute if the args match
 # --match -- arguments to command that should be used to match the record
 # --output -- output that should be written to standard out if the args match
 # --type  -- type of match partial or exact
 #
-# NOTE: --source --exec and --output should be mutually exclusive. We should never use more than one at time in the the same expect
+# NOTE: --source --exec and --output should be mutually exclusive. We should never use more than one at time in the same expect
 #--------------------------------------------------------------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------
@@ -102,7 +102,7 @@ shellmock_escape_quotes() {
 }
 
 #------------------------------------
-# Use awk to dete$RMine the match list
+# Use awk to determine the match list
 #------------------------------------
 mock_capture_match() {
   local MATCH
@@ -303,7 +303,7 @@ shellmock_expect() {
   # Field definitions for the capture file
   # $1 - arg match criteria
   # $2 - type of expectation (forward, source, or output)
-  # $3 - data related to the expectation type: script to foward to, the script to source, or the output to display
+  # $3 - data related to the expectation type: script to forward to, the script to source, or the output to display
   # $4 - status value to return
   # $5 - type of argument matcher
   # $6 - type of stdin matcher
@@ -328,7 +328,7 @@ shellmock_expect() {
 }
 
 #----------------------------------------
-# This funciton is used by the mock stubs
+# This function is used by the mock stubs
 # usage: shellmock_replay [cmd]
 #----------------------------------------
 shellmock_replay() {
@@ -513,14 +513,14 @@ shellmock_verify() {
 # Verify number of times called
 #---------------------------------------------------
 function shellmock_verify_times() {
-  assert_equal "${#capture[*]}" "$1"
+  [[ "${#capture[*]}" == $1 ]]
 }
 
 #---------------------------------------------------
 # Verify command of nth time stubs called
 #---------------------------------------------------
 function shellmock_verify_command() {
-  assert_equal "${capture[$1]}" "$2"
+  [[ "${capture[$1]}" == "$2" ]]
 }
 
 #-------------------------------------------------------------------------------------------------------
