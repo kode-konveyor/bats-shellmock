@@ -351,11 +351,25 @@ usage: shellmock_expect [cmd]
     [--output texttoecho]
 ```
 
-<table style="width:100%;"><colgroup><col style="width: 36%" /><col style="width: 52%" /><col style="width: 10%" /></colgroup><tbody><tr class="odd"><td style="text-align: left;"><p><strong>Item</strong></p></td><td style="text-align: left;"><p><strong>Description</strong></p></td><td style="text-align: left;"><p><strong>Required?</strong></p></td></tr><tr class="even"><td style="text-align: left;"><p>cmd</p></td><td style="text-align: left;"><p>unix command to mock</p></td><td style="text-align: left;"><p>Yes.</p></td></tr><tr class="odd"><td style="text-align: left;"><p>-t,--type</p></td><td style="text-align: left;"><p>Type of argument list matching: <strong>partial</strong>, <strong>exact</strong> <strong>regex</strong></p></td><td style="text-align: left;"><p>No. Defaults to <strong>exact</strong></p></td></tr><tr class="even"><td style="text-align: left;"><p>-T,--stdin-match-type</p></td><td style="text-align: left;"><p>Type of stdin matching: <strong>partial</strong>, <strong>exact</strong>, or <strong>regex</strong></p></td><td style="text-align: left;"><p><strong>exact</strong></p></td></tr><tr class="odd"><td style="text-align: left;"><p>-m,--match,--match-args</p></td><td style="text-align: left;"><p>Arguments passed to cmd that indicate a match to mock.</p></td><td style="text-align: left;"><p>No.</p></td></tr><tr class="even"><td style="text-align: left;"><p>-M,--match-stdin</p></td><td style="text-align: left;"><p>stdin data that is expected to be considered a match.</p></td><td style="text-align: left;"><p>No.</p></td></tr><tr class="odd"><td style="text-align: left;"><p>-e,--exec</p></td><td style="text-align: left;"><p>Command string to execute for custom behavior.</p></td><td style="text-align: left;"><p>No.</p></td></tr><tr class="even"><td style="text-align: left;"><p>-S,--source</p></td><td style="text-align: left;"><p>Command string to source.</p></td><td style="text-align: left;"><p>No.</p></td></tr><tr class="odd"><td style="text-align: left;"><p>-o,--output</p></td><td style="text-align: left;"><p>Text string to echo if there is a match.</p></td><td style="text-align: left;"><p>No.</p></td></tr><tr class="even"><td style="text-align: left;"><p>-s,--status</p></td><td style="text-align: left;"><p>status code to return</p></td><td style="text-align: left;"><p>No. Defaults to 0</p></td></tr></tbody></table>
+|Item|Description|Required?|Comment|
+|----|-----------|--------|--------|
+|cmd| unix command to mock|Yes.||
+|-t,--type|Type of argument list matching: partial, exact regex|No.|Defaults to exact|
+|-T,--stdin-match-type|Type of stdin matching: partial, exact, or regex|No.|Defaults to exact. Only the first line of stdin is considered.|
+|-m,--match,--match-args|Arguments passed to cmd that indicate a match to mock.| No.|Defaults to empty string.|
+|-M,--match-stdin|stdin data that is expected to be considered a match.| No.|Defaults to empty string.|
+| -e,--exec|Command string to execute for custom behavior.| No.| Defines both the output and status code.|
+|-S,--source |command string to source.| No.||
+| -o,--output|Text string to echo if there is a match.| No.||
+| -s,--status|status code to return|No. Defaults to 0||
 
-Matching can be defined based on the argument list or the stdin data stream. When both **--match** and **--match-stdin** are provided in an expectation then it becomes an AND of the two conditions.
+
+Matching is defined based on the argument list and the stdin data stream. That means if there is a stdin for the command, the default "no stdin" match will not work.
+
+If a command is mocked by **shellmock\_expect** but there is no match for the particular call, it will return with 99 as status code, in the hope that it will break the calling code.
 
 **shellmock\_expect** supports returning a single or multiple responses for a given match criteria. The responses will be returned in the order defined. Once all response are seen the last response will be returned indefinitely.
+
 
 #### examples
 
