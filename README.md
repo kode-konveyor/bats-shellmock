@@ -494,6 +494,21 @@ For each file there will be two .tmp data files:
 
 -   \*.playback.state.tmp - keeps track of multiple responses for the same mock
 
+## Installing Bash Shell Mock from source
+
+Check out a copy of the **shellmock** repository. Then, either add the **shellmock**
+`bin` directory to your `$PATH`, or run the provided `install.sh`
+command with the location to the prefix in which you want to install
+**Shellmock**. For example, to install Bats into `/usr/local`,
+
+    $ git clone [repository_url]
+    $ cd bash_shell_mock
+    $ ./install.sh /usr/local
+
+Note that you may need to run `install.sh` with `sudo` if you do not
+have permission to write to the installation prefix.
+
+
 ## Limitations
 
 The **Shellmock** mocking approach does have impact on how write your scripts. The key to using any mocking in unix scripts is that the scripts must be reached via the PATH variable and you can not use full or relative pathing to the script. **Shellmock** uses the PATH variable to short circuit calling the "real" script or program.
